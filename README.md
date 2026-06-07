@@ -3,5 +3,5 @@
 ## Running
 
 ```shell
-py -m src.main
+py -3.14 -m src.main
 ```
