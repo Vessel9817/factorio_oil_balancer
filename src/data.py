@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import NamedTuple, Optional
+from typing import NamedTuple, Iterable
 
 class OilDataRecord(NamedTuple):
     heavy_oil: int
@@ -165,14 +165,19 @@ class OilData(AbstractOilData):
         'COAL_LIQUEFACTION': tick_coal_liquefaction,
         'HEAVY_OIL_CRACKING_TO_LIGHT_OIL': tick_heavy_oil_cracking,
         'LIGHT_OIL_CRACKING_TO_PETROLEUM_GAS': tick_light_oil_cracking,
-        'HEAVY_OIL_TO_SOLID_FUEL': tick_heavy_solid_fuel,
-        'LIGHT_OIL_TO_SOLID_FUEL': tick_light_solid_fuel,
-        'PETROLEUM_GAS_TO_SOLID_FUEL': tick_petroleum_solid_fuel,
+        'SOLID_FUEL_FROM_HEAVY_OIL': tick_heavy_solid_fuel,
+        'SOLID_FUEL_FROM_LIGHT_OIL': tick_light_solid_fuel,
+        'SOLID_FUEL_FROM_PETROLEUM_GAS': tick_petroleum_solid_fuel,
         'LUBRICANT': tick_lubricant
     }
 
-    def tick(self, runners: set[str]) -> None:
-        for runner in runners:
-            assert runner in OilData.RUNNERS, f'Invalid runner name: {runner}'
+    def tick(self, runners: Iterable[str]) -> None:
+        ran: set[str] = set()
 
-            OilData.RUNNERS[runner](self)
+        for runner in runners:
+            if runner not in ran:
+                assert runner in OilData.RUNNERS, f'Invalid runner name: {runner}'
+
+                ran.add(runner)
+
+                OilData.RUNNERS[runner](self)
