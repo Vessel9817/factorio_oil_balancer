@@ -1,5 +1,5 @@
 from math import dist, inf
-from typing import Callable, Optional
+from typing import Callable, Iterable, Optional
 
 from .data import AbstractOilData, OilData, OilDataRecord
 
@@ -110,3 +110,8 @@ def sample_dynamic_alg(data: AbstractOilData) -> list[str]:
             min_name, min_cost = name, cost
 
     return [] if min_name == 'NOTHING' else [min_name]
+
+def sample_combined_alg(data: AbstractOilData) -> Iterable[str]:
+    runners = sample_hardcoded_alg(data)
+    
+    return runners if len(runners) > 0 else sample_dynamic_alg(data)

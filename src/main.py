@@ -5,12 +5,14 @@ from . import backend, cli
 if __name__ == '__main__':
     algs = [
         backend.sample_hardcoded_alg,
-        backend.sample_dynamic_alg
+        backend.sample_dynamic_alg,
+        backend.sample_combined_alg
     ]
     alg_msg = \
         'Please select an algorithm:\n' \
         '(0) Hardcoded\n' \
-        '(1) Dynamic\n'
+        '(1) Dynamic\n' \
+        '(2) Combined\n'
 
     alg_index = cli.get_int(alg_msg)
     
