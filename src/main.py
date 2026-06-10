@@ -5,9 +5,9 @@ from . import backend, cli, data, samples
 
 if __name__ == '__main__':
     algs: list[Callable[[data.AbstractOilData], Iterable[str]]] = [
-        samples.sample_hardcoded_alg,
-        samples.sample_dynamic_alg,
-        samples.sample_combined_alg
+        samples.hardcoded_alg,
+        samples.dynamic_alg,
+        samples.combined_alg
     ]
     alg_msg = \
         'Please select an algorithm:\n' \

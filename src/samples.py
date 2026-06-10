@@ -2,7 +2,7 @@ from math import dist, inf
 
 from .data import AbstractOilData
 
-def sample_hardcoded_alg(data: AbstractOilData) -> set[str]:
+def hardcoded_alg(data: AbstractOilData) -> set[str]:
     out: set[str] = set()
 
     if data.solid_fuel < data.target.solid_fuel:
@@ -32,7 +32,7 @@ def sample_hardcoded_alg(data: AbstractOilData) -> set[str]:
     # Set access is nondeterministic
     return out
 
-def sample_dynamic_alg(data: AbstractOilData) -> list[str]:
+def dynamic_alg(data: AbstractOilData) -> list[str]:
     error = dist(
         (
             data.target.heavy_oil,
@@ -79,7 +79,7 @@ def sample_dynamic_alg(data: AbstractOilData) -> list[str]:
 
     return [] if min_name == 'NOTHING' else [min_name]
 
-def sample_combined_alg(data: AbstractOilData) -> set[str] | list[str]:
-    runners = sample_hardcoded_alg(data)
-    
-    return runners if len(runners) > 0 else sample_dynamic_alg(data)
+def combined_alg(data: AbstractOilData) -> set[str] | list[str]:
+    runners = hardcoded_alg(data)
+
+    return runners if len(runners) > 0 else dynamic_alg(data)
