@@ -1,13 +1,13 @@
 from math import dist
 from typing import Callable, Iterable
 
-from . import backend, cli, data
+from . import backend, cli, data, samples
 
 if __name__ == '__main__':
     algs: list[Callable[[data.AbstractOilData], Iterable[str]]] = [
-        backend.sample_hardcoded_alg,
-        backend.sample_dynamic_alg,
-        backend.sample_combined_alg
+        samples.sample_hardcoded_alg,
+        samples.sample_dynamic_alg,
+        samples.sample_combined_alg
     ]
     alg_msg = \
         'Please select an algorithm:\n' \
@@ -28,6 +28,7 @@ if __name__ == '__main__':
     while sim.tick():
         i += 1
 
+    # Aggregating simulation results
     hours = i // (60 * 60)
     mins = round(i / 60) - 60 * hours
     error = dist(
