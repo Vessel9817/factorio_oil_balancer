@@ -1,6 +1,13 @@
 from math import inf
+import numpy as np
 
 from .data import AbstractOilData
+
+__TARGET_MAT = np.matrix([
+    [  26, -36,  81],
+    [-133, 117, -45],
+    [  97,   0,   0]
+]) / 873
 
 def hardcoded_alg(data: AbstractOilData) -> set[str]:
     out: set[str] = set()
@@ -63,7 +70,53 @@ def dynamic_alg(data: AbstractOilData) -> list[str]:
 
     return [] if min_name == 'NOTHING' else [min_name]
 
-def combined_alg(data: AbstractOilData) -> set[str] | list[str]:
+def dynamic_hardcoded_alg(data: AbstractOilData) -> set[str] | list[str]:
     runners = hardcoded_alg(data)
+
+    return runners if len(runners) > 0 else dynamic_alg(data)
+
+def computed_alg(data: AbstractOilData) -> list[str]:
+    out: list[str] = []
+
+    dh = data.target.heavy_oil - data.heavy_oil
+    dl = data.target.light_oil - data.light_oil
+    dp = data.target.petroleum_gas - data.petroleum_gas
+    mat = np.array([dh, dl, dp]) * __TARGET_MAT
+    need_heavy_oil = False
+
+    if mat[0,2] > 0:
+        need_heavy_oil = data.heavy_oil < 25
+
+        if not need_heavy_oil:
+            out.append('COAL_LIQUEFACTION')
+
+    if mat[0,1] > 0:
+        out.append('ADVANCED_OIL_PROCESSING')
+    elif need_heavy_oil:
+        out.append('ADVANCED_OIL_PROCESSING')
+        out.append('COAL_LIQUEFACTION')
+
+    if mat[0,0] > 0:
+        out.append('BASIC_OIL_PROCESSING')
+
+    # TODO If none, try cracking fluids to lower error
+
+    if data.lubricant < 10 * round(data.target.lubricant / 10):
+        out.append('LUBRICANT')
+
+    if data.solid_fuel < data.target.solid_fuel:
+        if data.petroleum_gas >= data.target.petroleum_gas:
+            out.append('SOLID_FUEL_FROM_PETROLEUM_GAS')
+        elif data.light_oil >= data.target.light_oil:
+            out.append('SOLID_FUEL_FROM_LIGHT_OIL')
+        elif data.heavy_oil >= data.target.heavy_oil:
+            out.append('SOLID_FUEL_FROM_HEAVY_OIL')
+        else:
+            out.append('SOLID_FUEL_FROM_PETROLEUM_GAS')
+
+    return out
+
+def dynamic_computed_alg(data: AbstractOilData) -> list[str]:
+    runners = computed_alg(data)
 
     return runners if len(runners) > 0 else dynamic_alg(data)

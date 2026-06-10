@@ -7,13 +7,17 @@ if __name__ == '__main__':
     algs: list[Callable[[data.AbstractOilData], Iterable[str]]] = [
         samples.hardcoded_alg,
         samples.dynamic_alg,
-        samples.combined_alg
+        samples.dynamic_hardcoded_alg,
+        samples.computed_alg,
+        samples.dynamic_computed_alg
     ]
     alg_msg = \
         'Please select an algorithm:\n' \
         '(0) Hardcoded\n' \
         '(1) Dynamic\n' \
-        '(2) Combined\n'
+        '(2) Hardcoded+Dynamic\n' \
+        '(3) Computed\n' \
+        '(4) Computed+Dynamic\n'
 
     alg_index = cli.get_int(alg_msg)
 
