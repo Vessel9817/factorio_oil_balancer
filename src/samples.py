@@ -114,8 +114,6 @@ def computed_alg(data: AbstractOilData) -> list[str]:
             out.append('SOLID_FUEL_FROM_LIGHT_OIL')
         elif data.heavy_oil >= data.target.heavy_oil:
             out.append('SOLID_FUEL_FROM_HEAVY_OIL')
-        else:
-            out.append('SOLID_FUEL_FROM_PETROLEUM_GAS')
 
     # Trying to crack fluids to reduce error
     if not out:
