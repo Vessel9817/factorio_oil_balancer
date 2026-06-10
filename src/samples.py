@@ -1,4 +1,4 @@
-from math import dist, inf
+from math import inf
 
 from .data import AbstractOilData
 
@@ -17,7 +17,7 @@ def hardcoded_alg(data: AbstractOilData) -> set[str]:
         out.add('ADVANCED_OIL_PROCESSING')
         out.add('COAL_LIQUEFACTION')
 
-    if data.lubricant < data.target.lubricant:
+    if data.lubricant < 10 * round(data.target.lubricant / 10):
         out.add('LUBRICANT')
 
     if data.light_oil < data.target.light_oil:
@@ -33,22 +33,6 @@ def hardcoded_alg(data: AbstractOilData) -> set[str]:
     return out
 
 def dynamic_alg(data: AbstractOilData) -> list[str]:
-    error = dist(
-        (
-            data.target.heavy_oil,
-            data.target.light_oil,
-            data.target.petroleum_gas,
-            data.target.solid_fuel,
-            data.target.lubricant
-        ),
-        (
-            data.heavy_oil,
-            data.light_oil,
-            data.petroleum_gas,
-            data.solid_fuel,
-            data.lubricant
-        )
-    )
     h = data.heavy_oil
     l = data.light_oil
     p = data.petroleum_gas
@@ -59,18 +43,18 @@ def dynamic_alg(data: AbstractOilData) -> list[str]:
     dp = p - data.target.petroleum_gas
     ds = s - data.target.solid_fuel
     dg = g - data.target.lubricant
-    min_name, min_cost = 'NOTHING', error + 1
+    min_name, min_cost = 'NOTHING', 1
 
     costs = {
-        'BASIC_OIL_PROCESSING': error + 18*dp + 81,
-        'LUBRICANT': error - 20*dh + 20*dg + 200 if h >= 10 else inf,
-        'LIGHT_OIL_CRACKING_TO_PETROLEUM_GAS': error - 30*dl + 20*dp + 325 if l >= 15 else inf,
-        'HEAVY_OIL_CRACKING_TO_LIGHT_OIL': error - 40*dh + 30*dl + 625 if h >= 20 else inf,
-        'SOLID_FUEL_FROM_PETROLEUM_GAS': error - 40*dp + 2*ds + 401 if p >= 20 else inf,
-        'SOLID_FUEL_FROM_HEAVY_OIL': error - 40*dh + 2*ds + 401 if h >= 20 else inf,
-        'SOLID_FUEL_FROM_LIGHT_OIL': error - 20*dl + 2*ds + 101 if l >= 10 else inf,
-        'ADVANCED_OIL_PROCESSING': error + 10*dh + 18*dl + 22*dp + 227,
-        'COAL_LIQUEFACTION': error + 26*dh + 8*dl + 4*dp + 189 if h >= 5 else inf,
+        'BASIC_OIL_PROCESSING': 18*dp + 81,
+        'LUBRICANT': -20*dh + 20*dg + 200 if h >= 10 else inf,
+        'LIGHT_OIL_CRACKING_TO_PETROLEUM_GAS': -30*dl + 20*dp + 325 if l >= 15 else inf,
+        'HEAVY_OIL_CRACKING_TO_LIGHT_OIL': -40*dh + 30*dl + 625 if h >= 20 else inf,
+        'SOLID_FUEL_FROM_PETROLEUM_GAS': -40*dp + 2*ds + 401 if p >= 20 else inf,
+        'SOLID_FUEL_FROM_HEAVY_OIL': -40*dh + 2*ds + 401 if h >= 20 else inf,
+        'SOLID_FUEL_FROM_LIGHT_OIL': -20*dl + 2*ds + 101 if l >= 10 else inf,
+        'ADVANCED_OIL_PROCESSING': 10*dh + 18*dl + 22*dp + 227,
+        'COAL_LIQUEFACTION': 26*dh + 8*dl + 4*dp + 189 if h >= 5 else inf,
     }
 
     for name, cost in costs.items():
