@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import NamedTuple, Iterable
+from typing import Iterable, NamedTuple, Optional
 
 class OilDataRecord(NamedTuple):
     heavy_oil: int
@@ -40,18 +40,22 @@ class AbstractOilData:
         pass
 
 class OilData(AbstractOilData):
-    def __init__(self, target: OilDataRecord) -> None:
+    def __init__(
+        self,
+        target: OilDataRecord,
+        current: Optional[OilDataRecord] = None
+    ) -> None:
         self._basic_oil_processing_tick = 0
         self._advanced_oil_processing_tick = 0
         self._coal_liquefaction_tick = 0
         self._heavy_oil_cracking_tick = 0
         self._light_oil_cracking_tick = 0
         self._target = target
-        self._heavy_oil = 0
-        self._light_oil = 0
-        self._petroleum_gas = 0
-        self._solid_fuel = 0
-        self._lubricant = 0
+        self._heavy_oil = 0 if current is None else current.heavy_oil
+        self._light_oil = 0 if current is None else current.light_oil
+        self._petroleum_gas = 0 if current is None else current.petroleum_gas
+        self._solid_fuel = 0 if current is None else current.solid_fuel
+        self._lubricant = 0 if current is None else current.lubricant
 
     @property
     def heavy_oil(self) -> int:

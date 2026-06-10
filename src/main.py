@@ -1,9 +1,10 @@
 from math import dist
+from typing import Callable, Iterable
 
-from . import backend, cli
+from . import backend, cli, data
 
 if __name__ == '__main__':
-    algs = [
+    algs: list[Callable[[data.AbstractOilData], Iterable[str]]] = [
         backend.sample_hardcoded_alg,
         backend.sample_dynamic_alg,
         backend.sample_combined_alg
@@ -15,12 +16,11 @@ if __name__ == '__main__':
         '(2) Combined\n'
 
     alg_index = cli.get_int(alg_msg)
-    
+
     while alg_index < 0 or alg_index >= len(algs):
-        print(f"Algorithm {alg_index} doesn't exist")
+        alg_index = cli.get_int(f"Algorithm {alg_index} doesn't exist\n{alg_msg}")
 
-        alg_index = cli.get_int(alg_msg)
-
+    # Running simulation
     alg = algs[alg_index]
     sim = backend.Simulator(alg)
     i = 0

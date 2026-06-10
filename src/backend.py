@@ -6,7 +6,7 @@ from .data import AbstractOilData, OilData, OilDataRecord
 class Simulator:
     def __init__(
         self,
-        alg: Callable[[AbstractOilData], set[str]],
+        alg: Callable[[AbstractOilData], Iterable[str]],
         data: Optional[OilData] = None
     ) -> None:
         self._alg = alg
@@ -27,7 +27,7 @@ class Simulator:
         # Simulates 1 second of runtime
         runners = self._alg(self.data)
 
-        if len(runners) < 1:
+        if not runners:
             return False
 
         self.data.tick(runners)
@@ -111,7 +111,7 @@ def sample_dynamic_alg(data: AbstractOilData) -> list[str]:
 
     return [] if min_name == 'NOTHING' else [min_name]
 
-def sample_combined_alg(data: AbstractOilData) -> Iterable[str]:
+def sample_combined_alg(data: AbstractOilData) -> set[str] | list[str]:
     runners = sample_hardcoded_alg(data)
     
     return runners if len(runners) > 0 else sample_dynamic_alg(data)
