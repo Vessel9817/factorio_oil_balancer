@@ -7,7 +7,7 @@ __TARGET_MAT = np.matrix([
     [  26, -36,  81],
     [-133, 117, -45],
     [  97,   0,   0]
-]) / 873
+]) / -873
 
 def hardcoded_alg(data: AbstractOilData) -> set[str]:
     out: set[str] = set()
@@ -50,18 +50,18 @@ def dynamic_alg(data: AbstractOilData) -> list[str]:
     dp = p - data.target.petroleum_gas
     ds = s - data.target.solid_fuel
     dg = g - data.target.lubricant
-    min_name, min_cost = 'NOTHING', 1
+    min_name, min_cost = 'NOTHING', 0
 
     costs = {
-        'BASIC_OIL_PROCESSING': 18*dp + 81,
-        'LUBRICANT': -20*dh + 20*dg + 200 if h >= 10 else inf,
-        'LIGHT_OIL_CRACKING_TO_PETROLEUM_GAS': -30*dl + 20*dp + 325 if l >= 15 else inf,
-        'HEAVY_OIL_CRACKING_TO_LIGHT_OIL': -40*dh + 30*dl + 625 if h >= 20 else inf,
-        'SOLID_FUEL_FROM_PETROLEUM_GAS': -40*dp + 2*ds + 401 if p >= 20 else inf,
-        'SOLID_FUEL_FROM_HEAVY_OIL': -40*dh + 2*ds + 401 if h >= 20 else inf,
-        'SOLID_FUEL_FROM_LIGHT_OIL': -20*dl + 2*ds + 101 if l >= 10 else inf,
-        'ADVANCED_OIL_PROCESSING': 10*dh + 18*dl + 22*dp + 227,
-        'COAL_LIQUEFACTION': 26*dh + 8*dl + 4*dp + 189 if h >= 5 else inf,
+        'BASIC_OIL_PROCESSING': 18*dp + 80,
+        'LUBRICANT': -20*dh + 20*dg + 199 if h >= 10 else inf,
+        'LIGHT_OIL_CRACKING_TO_PETROLEUM_GAS': -30*dl + 20*dp + 324 if l >= 15 else inf,
+        'HEAVY_OIL_CRACKING_TO_LIGHT_OIL': -40*dh + 30*dl + 624 if h >= 20 else inf,
+        'SOLID_FUEL_FROM_PETROLEUM_GAS': -40*dp + 2*ds + 400 if p >= 20 else inf,
+        'SOLID_FUEL_FROM_HEAVY_OIL': -40*dh + 2*ds + 400 if h >= 20 else inf,
+        'SOLID_FUEL_FROM_LIGHT_OIL': -20*dl + 2*ds + 100 if l >= 10 else inf,
+        'ADVANCED_OIL_PROCESSING': 10*dh + 18*dl + 22*dp + 226,
+        'COAL_LIQUEFACTION': 26*dh + 8*dl + 4*dp + 188 if h >= 5 else inf,
     }
 
     for name, cost in costs.items():
@@ -78,9 +78,13 @@ def dynamic_hardcoded_alg(data: AbstractOilData) -> set[str] | list[str]:
 def computed_alg(data: AbstractOilData) -> list[str]:
     out: list[str] = []
 
-    dh = data.target.heavy_oil - data.heavy_oil
-    dl = data.target.light_oil - data.light_oil
-    dp = data.target.petroleum_gas - data.petroleum_gas
+    # Computing how many times we need to produce the 3 base fluids
+    h = data.heavy_oil
+    l = data.light_oil
+    p = data.petroleum_gas
+    dh = h - data.target.heavy_oil
+    dl = l - data.target.light_oil
+    dp = p - data.target.petroleum_gas
     mat = np.array([dh, dl, dp]) * __TARGET_MAT
     need_heavy_oil = False
 
@@ -99,8 +103,7 @@ def computed_alg(data: AbstractOilData) -> list[str]:
     if mat[0,0] > 0:
         out.append('BASIC_OIL_PROCESSING')
 
-    # TODO If none, try cracking fluids to lower error
-
+    # Producing outputs
     if data.lubricant < 10 * round(data.target.lubricant / 10):
         out.append('LUBRICANT')
 
@@ -113,6 +116,13 @@ def computed_alg(data: AbstractOilData) -> list[str]:
             out.append('SOLID_FUEL_FROM_HEAVY_OIL')
         else:
             out.append('SOLID_FUEL_FROM_PETROLEUM_GAS')
+
+    # Trying to crack fluids to reduce error
+    if not out:
+        if -40*dh + 30*dl + 624 < 0:
+            out.append('HEAVY_OIL_CRACKING_TO_LIGHT_OIL')
+        if -30*dl + 20*dp + 324 < 0:
+            out.append('LIGHT_OIL_CRACKING_TO_PETROLEUM_GAS')
 
     return out
 
