@@ -50,9 +50,9 @@ def dynamic_alg(data: AbstractOilData) -> list[str]:
     dp = p - data.target.petroleum_gas
     ds = s - data.target.solid_fuel
     dg = g - data.target.lubricant
-    min_name, min_cost = 'NOTHING', 0
-
-    costs = {
+    min_name = 'NOTHING'
+    min_cost: int | float = 0
+    costs: dict[str, int | float] = {
         'BASIC_OIL_PROCESSING': 18*dp + 80,
         'LUBRICANT': -20*dh + 20*dg + 199 if h >= 10 else inf,
         'LIGHT_OIL_CRACKING_TO_PETROLEUM_GAS': -30*dl + 20*dp + 324 if l >= 15 else inf,
