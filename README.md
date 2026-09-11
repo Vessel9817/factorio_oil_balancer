@@ -1,6 +1,6 @@
 # Factorio Oil Balancer
 
-[![MIT license][license-badge]](LICENSE)
+[![MIT license][license-badge]](LICENSE.md)
 [![CI][ci-badge]][ci-workflow]
 
 ## Installation
