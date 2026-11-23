@@ -1,5 +1,5 @@
 ast_serialize==0.13.1
-librt==0.16.0
+librt==0.17.0
 mypy==2.4.1
 mypy_extensions==1.2.0
 numpy==2.5.5
